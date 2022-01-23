@@ -6,7 +6,6 @@ from sklearn.neural_network import MLPClassifier
 import pandas as pd
 import numpy as np
 import json
-import random
 from operator import itemgetter
 
 import nltk
@@ -20,8 +19,9 @@ app = Flask(__name__)
 '''
 START BY PREPPING TRAINING DATA intents.json file
 '''
+
 # TRAINING DATA
-with open('intents.json') as json_data:
+with open('hvac_babble.json') as json_data:
     intents = json.load(json_data)
 
 words = []
@@ -29,17 +29,18 @@ classes = []
 documents = []
 ignore_words = ['?']
 
-for intent in intents['intents']:
-    for pattern in intent['patterns']:
-        # tokenize each word in the sentence
-        w = nltk.word_tokenize(pattern)
-        # add to our words list
-        words.extend(w)
-        # add to documents in our corpus
-        documents.append((w, intent['tag']))
-        # add to our classes list
-        if intent['tag'] not in classes:
-            classes.append(intent['tag'])
+
+for (category, q_a) in hvac_world.items():
+    # tokenize each word in the sentence
+    w = nltk.word_tokenize(q_a['answer'][0])
+    # add to our words list
+    words.extend(w)
+    # add to documents in our corpus
+    documents.append((w, category))
+    # add to our classes list
+    if category not in classes:
+        classes.append(category)
+
 
 # stem and lower each word and remove duplicates
 words = [stemmer.stem(w.lower()) for w in words if w not in ignore_words]
@@ -47,11 +48,11 @@ words = sorted(list(set(words)))
 # sort classes
 classes = sorted(list(set(classes)))
 # documents = combination between patterns and intents
-print(len(documents), "documents")
+print(len(documents), 'documents')
 # classes = intents
-print(len(classes), "classes", classes)
+print(len(classes), 'classes', classes)
 # words = all words, vocabulary
-print(len(words), "unique stemmed words", words)
+print(len(words), 'unique stemmed words', words)
 
 
 '''
@@ -107,34 +108,34 @@ def bow(sentence, words, show_details=True):
     # tokenize the pattern
     sentence_words = clean_up_sentence(sentence)
     # bag of words - matrix of N words, vocabulary matrix
-    bag = [0]*len(words)  
+    bag = [0]*len(words)
     for s in sentence_words:
         for i,w in enumerate(words):
-            if w == s: 
+            if w == s:
                 # assign 1 if current word is in the vocabulary position
                 bag[i] = 1
                 if show_details:
-                    print ("found in bag: %s" % w)
+                    print ('found in bag: %s' % w)
     return(np.array(bag))
-    
+
 def classify_local(sentence):
     # generate probabilities from the model
     input_data = pd.DataFrame([bow(sentence, words)], dtype=float, index=['input'])
-    
+
     results = model.predict_proba(input_data)[0]
-    
+
     results =  np.round(results,4).tolist()
     probs_and_classes = list(zip(classes, results))
-    
+
     print(probs_and_classes)
-    
+
     best_result = max(probs_and_classes,key=itemgetter(1))
-    
+
     # return tuple of intent and probability
     return best_result
 
 
-@app.route("/predict", methods=['POST'])
+@app.route('/predict', methods=['POST'])
 def predictor():
 
     try:
@@ -142,26 +143,34 @@ def predictor():
         sentence = json_data['sentence']
 
         prediction = str(classify_local(sentence)).strip('[]')
-        #print("Route hit prediction is: ",prediction)
-        
+
         prediction_tuple = eval(prediction)
         tag = prediction_tuple[0]
         probability = prediction_tuple[1]
 
+        get_answer = hvac_world.get(tag, None)
+        bot_reply = get_answer['answer']
+
         response_obj = {'status':'success',
-                            "tag":tag,
-                            "probability":probability
-                            }
+                            'tag':tag,
+                            'probability':probability,
+                            'bot_reply':bot_reply}
         return jsonify(response_obj)
 
-            
+
     except Exception as e:
         info = f'Classification Error: {e}'
         print(info)
         response_obj = {'status':'fail','error':info}
         return jsonify(response_obj), 500
 
- 
+
+@app.route('/')
+def hello_world():
+    message = 'Hello from Flask!'
+    response_obj = {'status':'success','message':message}
+    return jsonify(response_obj)
+
 
 
 if __name__ == "__main__":
