@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import flask
 
 from sklearn.neural_network import MLPClassifier
@@ -6,6 +6,7 @@ from sklearn.neural_network import MLPClassifier
 import pandas as pd
 import numpy as np
 import json
+import random
 from operator import itemgetter
 
 import nltk
@@ -22,7 +23,7 @@ START BY PREPPING TRAINING DATA intents.json file
 
 # TRAINING DATA
 with open('hvac_babble.json') as json_data:
-    intents = json.load(json_data)
+    hvac_world = json.load(json_data)
 
 words = []
 classes = []
@@ -103,75 +104,78 @@ def clean_up_sentence(sentence):
     sentence_words = [stemmer.stem(word.lower()) for word in sentence_words]
     return sentence_words
 
+
 # return bag of words array: 0 or 1 for each word in the bag that exists in the sentence
 def bow(sentence, words, show_details=True):
     # tokenize the pattern
     sentence_words = clean_up_sentence(sentence)
     # bag of words - matrix of N words, vocabulary matrix
-    bag = [0]*len(words)
+    bag = [0]*len(words)  
     for s in sentence_words:
         for i,w in enumerate(words):
-            if w == s:
+            if w == s: 
                 # assign 1 if current word is in the vocabulary position
                 bag[i] = 1
                 if show_details:
-                    print ('found in bag: %s' % w)
+                    print ("found in bag: %s" % w)
     return(np.array(bag))
+    
 
 def classify_local(sentence):
     # generate probabilities from the model
-    input_data = pd.DataFrame([bow(sentence, words)], dtype=float, index=['input'])
-
+    input_data = pd.DataFrame([bow(sentence, words)], dtype=float, index=['input']) 
     results = model.predict_proba(input_data)[0]
-
     results =  np.round(results,4).tolist()
-    probs_and_classes = list(zip(classes, results))
-
+    probs_and_classes = list(zip(classes,results))
     print(probs_and_classes)
-
-    best_result = max(probs_and_classes,key=itemgetter(1))
-
+    best_result = max(probs_and_classes,key=itemgetter(1))[0]
     # return tuple of intent and probability
     return best_result
 
 
-@app.route('/predict', methods=['POST'])
-def predictor():
-
-    try:
-        json_data = flask.request.json
-        sentence = json_data['sentence']
-
-        prediction = str(classify_local(sentence)).strip('[]')
-
-        prediction_tuple = eval(prediction)
-        tag = prediction_tuple[0]
-        probability = prediction_tuple[1]
-
-        get_answer = hvac_world.get(tag, None)
-        bot_reply = get_answer['answer']
-
-        response_obj = {'status':'success',
-                            'tag':tag,
-                            'probability':probability,
-                            'bot_reply':bot_reply}
-        return jsonify(response_obj)
 
 
-    except Exception as e:
-        info = f'Classification Error: {e}'
-        print(info)
-        response_obj = {'status':'fail','error':info}
-        return jsonify(response_obj), 500
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 
-@app.route('/')
-def hello_world():
-    message = 'Hello from Flask!'
-    response_obj = {'status':'success','message':message}
-    return jsonify(response_obj)
+@app.route("/get", methods=["POST"])
+def chatbot_response():
+    msg = request.form["msg"]
+
+    print("msg",msg)
+    class_info = classify_local(msg)
+    print("class_info",class_info)
+
+    responce = hvac_world.get(class_info, None)
+    responces_avail = responce['answer']
+    print("responces_avail",responces_avail)
+
+    '''
+    if msg.startswith('my name is'):
+        name = msg[11:]
+        ints = predict_class(msg, model)
+        res1 = getResponse(ints, intents)
+        res =res1.replace("{n}",name)
+    elif msg.startswith('hi my name is'):
+        name = msg[14:]
+        ints = predict_class(msg, model)
+        res1 = getResponse(ints, intents)
+        res =res1.replace("{n}",name)
+    else:
+        ints = predict_class(msg, model)
+        res = getResponse(ints, intents)
+    '''
+    
+    responce_final = random.choice(responces_avail)
+    print("responce_final",responce_final)
+    return responce_final
+
+
 
 
 
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    app.run()
+

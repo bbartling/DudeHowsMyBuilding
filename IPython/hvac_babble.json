@@ -1,0 +1,97 @@
+{
+	"greeting":
+		{
+		"question": ["Hi there", "How are you", "Is anyone there?", "Hello", "Good day"],
+		"answer": ["Hello, thanks for asking", "Good to see you again", "Hi there, how can I help?"]
+		},
+		
+	"goodbye":
+		{
+		"question": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time"],
+		"answer": ["See you!", "Have a nice day", "Bye! Come back again soon."]
+		},
+		
+	"thanks":
+		{
+		"question": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+		"answer": ["Happy to help!", "Any time!", "My pleasure"]
+		},
+		
+	"noanswer":
+		{
+		"question": [" "],
+		"answer": ["Sorry, can't understand you", "Please give me more info", "Not sure I understand"]
+		},
+		
+	"options":
+		{
+		"question": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?"],
+		"answer": ["I can help to check and see if the building temperature control system is OK, like zone temps, AHUs, central plant, power, or energy use", "What sort of system in your building do you want to check?"]
+		},
+		
+	"check_all_hvac":
+		{
+		"question": ["Dude hows my building?", "Dude how is the HVAC running?", "What is the HVAC doing?", "Are there any problems with the HVAC?"],
+		"answer": ["Checking to see how the HVAC is operating..."]
+		},
+		
+	"what_to_do":
+		{
+		"question": ["who should I call?", "what should I do?", "wtf", "oh no", "thats bad!"],
+		"answer": ["I think we should get a hold of someone at the building or a local mechanical contractor"]
+		},
+		
+	"check_ahu":
+		{
+		"question": ["how does the air handling unit AHU look?", "how does the rooftop unit RTU look?", "is the AHU RTU air handling unit down out on an alarm like freeze or fire alarm?", "What are the mix air dampers doing on the RTU AHU?", "Is the RTU AHU using free economizer cooling?", "What is the mix mixing air return discharge air temperatures temps on the AHU?", "is the AHU fans moving air controlling to a duct static pressure setpoint from modulating VFD variable frequency drive for the supply and return fan?", "are the fan system running?"],
+		"answer": ["Checking to see how the air handlers are looking..."]
+		},
+		
+	"check_zone_temps":
+		{
+		"question": ["how are the zone temperatures?", "are VAV box discharge leaving temps OK?", "are VAV box reheats looking OK?", "are the VAV boxes OK?", "are the zones OK?", "are occupants space areas at zone temperature setpoints?"],
+		"answer": ["Checking to see how the zones and vav boxes are doing..."]
+		},
+		
+	"check_chiller_plant":
+		{
+		"question": ["hows the chiller central plant looking?", "are we cooling the building at all?", "are we getting chilled water?"],
+		"answer": ["Checking central plant for cooling verification..."]
+		},
+		
+	"check_boiler_plant":
+		{
+		"question": ["hows the boilers looking?", "are we making steam hot water?", "how has the boiler system temps been looking today?"],
+		"answer": ["Checking central plant for cooling verification..."]
+		},
+		
+	"check_runtime":
+		{
+		"question": ["what has been the equipment runtime today?", "Did the optimal start logic work at all this morning?", "How many hours did the AHU equipment run today?"],
+		"answer": ["Calculating todays equipment runtime on the air side equipment..."]
+		},
+		
+	"check_power":
+		{
+		"question": ["How has the building power been looking today?", "are there big spikes in the electricity kW?", "Has the intelligent load control algorithm ILC been working OK?"],
+		"answer": ["Verifying that the power patterns for the building seem in check..."]
+		},
+		
+	"check_energy":
+		{
+		"question": ["How has our fuel use been looking?", "Has our fuel use been going up or down?", "Has the electricity consumption in energy kWh good or bad?"],
+		"answer": ["Verifying that the energy consumption is in check..."]
+		},
+		
+	"check_future_weather":
+		{
+		"question": ["Is the weather supposed to get cold or warmer?", "what should I do with the HVAC with the weather cold warm front moving in?"],
+		"answer": ["Checking weather forecast..."]
+		},
+		
+	"check_how_it_should_all_work":
+		{
+		"question": ["what should the HVAC be doing?", "how should the AHU central plant be running?", "How should equipment be running in this weather?"],
+		"answer": ["Checking current conditions outside and mechanical run data to recommend what I think the HVAC should be doing..."]
+		}
+}
